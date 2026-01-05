@@ -4,7 +4,6 @@ import christmas.domain.Category;
 import christmas.domain.EventBadge;
 import christmas.domain.Menu;
 import christmas.domain.MenuRepository;
-import christmas.utils.Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,9 +22,26 @@ public class OrderService {
     }
 
     public void saveOrders(Map<Menu, Integer> map) {
+        boolean isOnlyDrink = true;
+
         for (Menu menu : map.keySet()) {
-            Validator.validateIsMenu(menu);
+            if (!menu.getCategory().equals(Category.DESSERT)) {
+                isOnlyDrink = false;
+            }
+
             menuRepository.save(menu, map.get(menu));
+        }
+
+        validateOrder(isOnlyDrink);
+    }
+
+    private void validateOrder(Boolean isOnlyDrink) {
+        if (isOnlyDrink) {
+            throw new IllegalArgumentException("음료만 주문 시, 주문할 수 없습니다.");
+        }
+
+        if (menuRepository.getTotalCount() > 20) {
+            throw new IllegalArgumentException("메뉴는 한 번에 최대 20개까지만 주문 가능합니다.");
         }
     }
 
@@ -45,7 +61,7 @@ public class OrderService {
 
     // 할인 전 총 주문 금액 반환
     public int getTotal() {
-        return menuRepository.getTotal();
+        return menuRepository.getTotalAmount();
     }
 
     // 증정 메뉴

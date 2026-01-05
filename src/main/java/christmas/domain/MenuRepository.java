@@ -4,7 +4,8 @@ import java.util.*;
 
 public class MenuRepository {
     private Map<Menu, Integer> orders = new HashMap<>();
-    private int total = 0;
+    private int totalAmount = 0;
+    private int totalCount = 0;
 
     public Map<Menu, Integer> getOrders() {
         return orders;
@@ -13,7 +14,8 @@ public class MenuRepository {
     // 1. 저장
     public void save(Menu menu, int count) {
         validateDuplicate(menu); // 필요 시 중복 검사
-        total += menu.getPrice() * count;
+        totalAmount += menu.getPrice() * count;
+        totalCount += count;
         orders.put(menu, count);
     }
 
@@ -32,28 +34,15 @@ public class MenuRepository {
         return orders.get(menu);
     }
 
-    public int getTotal() {
-        return total;
+    public int getTotalAmount() {
+        return totalAmount;
     }
 
-    //
-//    // 2. 단건 조회 (Optional 추천)
-//    public Optional<Menu> findByName(String name) {
-//        return Optional.ofNullable(orders.get(name));
-//    }
-//
-//    // 3. 전체 조회 (불변 리스트 반환 추천)
-//    public List<Menu> findAll() {
-//        return Collections.unmodifiableList(new ArrayList<>(storage.values()));
-//    }
-//
-//    // 4. 삭제 (필요 시)
-//    public void deleteByName(String name) {
-//        storage.remove(name);
-//    }
-//
-//    // 5. 초기화 (테스트 시 필수!)
-//    public void clear() {
-//        storage.clear();
-//    }
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void clear() {
+        orders.clear();
+    }
 }
