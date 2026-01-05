@@ -17,14 +17,30 @@ public class MainController {
 
     public void run() {
         // 1. 초기 설정 (void 메서드 재시도)
-        retryUntilValid(this::initialize);
+        retryUntilValid(this::selectDate);
+
+        retryUntilValid(this::order);
 
         // 2. 값 입력 (return 있는 메서드 재시도)
         // String result = retryUntilValid(inputView::readSomething);
     }
 
-    private void initialize() {
-        // ...
+    private void selectDate() {
+        orderService.setDay(InputView.readAndParseDate());
+    }
+
+    private void order() {
+        orderService.saveOrders(InputView.readMenu());
+    }
+
+    private void doPlanning() {
+        outputView.printOrders(orderService.getDay(), orderService.getMenuAndCnt());
+        outputView.printTotalMoney(orderService.getTotal());
+
+//        if (orderService.getTotal() >= 10000) {
+//
+//        }
+
     }
 
     // 1. 반환값이 있는 경우 (Supplier)

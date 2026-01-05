@@ -1,5 +1,7 @@
 package christmas.domain;
 
+import java.util.Arrays;
+
 import static christmas.domain.Category.*;
 
 public enum Menu {
@@ -27,6 +29,13 @@ public enum Menu {
         this.name = name;
         this.price = price;
         this.category = category;
+    }
+
+    public static Menu findByName(String input) {
+        return Arrays.stream(values())
+                .filter(menu -> menu.name.equals(input))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 주문입니다. 다시 입력해 주세요."));
     }
 
     public Category getCategory() {

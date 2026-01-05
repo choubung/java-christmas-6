@@ -21,6 +21,26 @@ public class Validator {
         }
     }
 
+    public static void validateIsOrderCount(String input) {
+        try {
+            int cnt = Integer.parseInt(input);
+
+            if (cnt < 1) {
+                throw new RuntimeException();
+            }
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("유효하지 않은 주문입니다. 다시 입력해 주세요.");
+        }
+    }
+
+    public static <T> void validateDuplicateMenu(List<T> items) {
+        Set<T> uniqueItems = new HashSet<>(items);
+        if (uniqueItems.size() != items.size()) {
+            throw new IllegalArgumentException("유효하지 않은 주문입니다. 다시 입력해 주세요.");
+        }
+    }
+
     // 1. 빈 문자열 체크
     public static void validateHasText(String input) {
         if (input == null || input.isBlank()) {
@@ -44,14 +64,6 @@ public class Validator {
         }
     }
 
-    // 3. 중복 체크
-    public static <T> void validateDuplicate(List<T> items) {
-        Set<T> uniqueItems = new HashSet<>(items);
-        if (uniqueItems.size() != items.size()) {
-            throw new IllegalArgumentException("중복된 값이 존재합니다.");
-        }
-    }
-
     // 4. 리스트 크기(길이) 체크
     public static <T> void validateSize(List<T> items, int expectedSize) {
         if (items.size() != expectedSize) {
@@ -65,6 +77,7 @@ public class Validator {
             throw new IllegalArgumentException("입력 값이 범위를 벗어났습니다.");
         }
     }
+
 
 
 }
