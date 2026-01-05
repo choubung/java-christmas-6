@@ -8,6 +8,19 @@ import java.util.regex.Pattern;
 public class Validator {
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^[0-9]*$");
 
+    public static void validateIsDate(String input) {
+        try {
+            int day = Integer.parseInt(input);
+
+            if (day < 1 || day > 31) {
+                throw new RuntimeException();
+            }
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("유효하지 않은 날짜입니다. 다시 입력해 주세요.");
+        }
+    }
+
     // 1. 빈 문자열 체크
     public static void validateHasText(String input) {
         if (input == null || input.isBlank()) {
@@ -52,4 +65,6 @@ public class Validator {
             throw new IllegalArgumentException("입력 값이 범위를 벗어났습니다.");
         }
     }
+
+
 }
