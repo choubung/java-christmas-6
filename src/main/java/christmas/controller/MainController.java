@@ -1,8 +1,11 @@
 package christmas.controller;
 
+import christmas.domain.EventBadge;
 import christmas.service.OrderService;
 import christmas.view.InputView;
 import christmas.view.OutputView;
+
+import java.util.ArrayList;
 
 public class MainController {
     private final OrderService orderService;
@@ -21,26 +24,31 @@ public class MainController {
 
         retryUntilValid(this::order);
 
+        retryUntilValid(this::doPlanning);
+
         // 2. 값 입력 (return 있는 메서드 재시도)
         // String result = retryUntilValid(inputView::readSomething);
     }
 
     private void selectDate() {
-        orderService.setDay(InputView.readAndParseDate());
+        orderService.setDay(inputView.readAndParseDate());
     }
 
     private void order() {
-        orderService.saveOrders(InputView.readMenu());
+        orderService.saveOrders(inputView.readMenu());
     }
 
     private void doPlanning() {
+        int originalTotal = orderService.getTotal();
         outputView.printOrders(orderService.getDay(), orderService.getMenuAndCnt());
-        outputView.printTotalMoney(orderService.getTotal());
+        outputView.printTotalMoney(originalTotal);
 
-//        if (orderService.getTotal() >= 10000) {
-//
-//        }
+        if (originalTotal < 10000) {
+            outputView.printBenefits("없음", new ArrayList<String[]>(), originalTotal, 0, EventBadge.NONE);
+            return;
+        }
 
+        outputView.printBenefits(orderService.isPresent(), orderService.getBenefits(), originalTotal, orderService.getTotalDiscountAmount(), orderService.getEventBadge());
     }
 
     // 1. 반환값이 있는 경우 (Supplier)

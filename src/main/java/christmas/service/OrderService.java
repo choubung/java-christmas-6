@@ -1,8 +1,10 @@
 package christmas.service;
 
 import christmas.domain.Category;
+import christmas.domain.EventBadge;
 import christmas.domain.Menu;
 import christmas.domain.MenuRepository;
+import christmas.utils.Validator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +24,7 @@ public class OrderService {
 
     public void saveOrders(Map<Menu, Integer> map) {
         for (Menu menu : map.keySet()) {
+            Validator.validateIsMenu(menu);
             menuRepository.save(menu, map.get(menu));
         }
     }
@@ -46,20 +49,20 @@ public class OrderService {
     }
 
     // 증정 메뉴
-    public boolean isPresent() {
+    public String isPresent() {
         if (getTotal() >= 120000) {
-            return true;
+            return "샴페인 1개";
         }
 
-        return false;
+        return "없음";
     }
 
-    // TODO: 혜택 내역
+    // 혜택 내역
     public ArrayList<String[]> getBenefits() {
         ArrayList<String[]> benefits = new ArrayList<>();
         int amount = 0;
 
-        if (isPresent()) {
+        if (getTotal() >= 120000) {
             amount -= 25000;
             totalDiscountAmount -= 25000;
         }
@@ -94,24 +97,26 @@ public class OrderService {
     }
 
     private String[] weekdaysDiscount() {
-        int discountAmount = 0;
-
-        for (Menu menu : menuRepository.findAllMenu()) {
-            if (menu.getCategory().equals(Category.DESSERT)) {
-                discountAmount -= 2023;
-            }
-        }
-
-        totalDiscountAmount += discountAmount;
-        return new String[]{"주말 할인", String.valueOf(discountAmount)};
-    }
-
-    private String[] weekendDiscount() {
+        Map<Menu, Integer> map = menuRepository.getOrders();
         int discountAmount = 0;
 
         for (Menu menu : menuRepository.findAllMenu()) {
             if (menu.getCategory().equals(Category.MAIN)) {
-                discountAmount -= 2023;
+                discountAmount -= 2023 * map.get(menu);
+            }
+        }
+
+        totalDiscountAmount += discountAmount;
+        return new String[]{"평일 할인", String.valueOf(discountAmount)};
+    }
+
+    private String[] weekendDiscount() {
+        int discountAmount = 0;
+        Map<Menu, Integer> map = menuRepository.getOrders();
+
+        for (Menu menu : menuRepository.findAllMenu()) {
+            if (menu.getCategory().equals(Category.MAIN)) {
+                discountAmount -= 2023 * map.get(menu);
             }
         }
 
@@ -134,9 +139,19 @@ public class OrderService {
         return totalDiscountAmount;
     }
 
+    // 이벤트 뱃지
+    public EventBadge getEventBadge() {
+        int totalDiscountAmountForCal = totalDiscountAmount * -1;
+        if (totalDiscountAmountForCal >= 5000 && totalDiscountAmountForCal < 10000) {
+            return EventBadge.STAR;
+        }
 
-    // TODO: 할인 후 결제 금액
-    // TODO: 이벤트 뱃지
+        if (totalDiscountAmountForCal < 20000) {
+            return EventBadge.TREE;
+        }
+
+        return EventBadge.SANTA;
+    }
 
     public void setDay(int day) {
         this.day = day;

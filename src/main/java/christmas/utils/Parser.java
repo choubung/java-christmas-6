@@ -13,7 +13,6 @@ public class Parser {
             String menuName = matcher.group(1).trim();
             String count = matcher.group(2).trim();
 
-
             Validator.validateIsOrderCount(count);
 
             return new String[]{menuName, count};

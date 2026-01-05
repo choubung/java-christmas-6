@@ -5,24 +5,27 @@ import java.util.*;
 public class MenuRepository {
     private Map<Menu, Integer> orders = new HashMap<>();
     private int total = 0;
-    private int discountedTotal = 0;
+
+    public Map<Menu, Integer> getOrders() {
+        return orders;
+    }
 
     // 1. 저장
     public void save(Menu menu, int count) {
         validateDuplicate(menu); // 필요 시 중복 검사
-        total += menu.getPrice();
+        total += menu.getPrice() * count;
         orders.put(menu, count);
     }
 
     private void validateDuplicate(Menu menu) {
-        ArrayList<Menu> old = (ArrayList<Menu>) orders.keySet();
-        if (old.contains(menu)) {
+        List<Menu> oldMenus = new ArrayList<>(orders.keySet());
+        if (oldMenus.contains(menu)) {
             throw new IllegalArgumentException("유효하지 않은 주문입니다. 다시 입력해 주세요.");
         }
     }
 
     public List<Menu> findAllMenu() {
-        return (ArrayList<Menu>) orders.keySet();
+        return new ArrayList<>(orders.keySet());
     }
 
     public int getCountByMenu(Menu menu) {
